@@ -20,4 +20,15 @@ const validationLoginArr = ()=> {
     ]
 }
 
-export { validationRegisterArr, validationLoginArr };
+const validationAddDoctorArr = ()=> {
+    return [
+        body("name").notEmpty().withMessage("Name is required"),
+        body("speciality").notEmpty().withMessage("Speciality is required"),
+        body("yearsOfExperience").isNumeric().withMessage("Years of experience must be a number"),
+        body("description").notEmpty().withMessage("Description is required"),
+        body("image").notEmpty().withMessage("Image is required"),
+    ]
+}
+
+
+export { validationRegisterArr, validationLoginArr, validationAddDoctorArr };
