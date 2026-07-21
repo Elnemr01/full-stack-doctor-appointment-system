@@ -52,32 +52,31 @@ export const registerUser = ErrorHandler(async (req,res,next)=> {
 export const loginUser = ErrorHandler(async (req,res,next)=> {
     const {email,password}=req.body;
 
-    const user=await User.findOne({email}).select('-password');
-
-    if(!user){
+    const findUser=await User.findOne({email});
+    if(!findUser){
         res.status(404).json({
             status: responseStatus.failed,
             message: "User Not Found"
         })
     }
-
     // check the password
-    const isMatch=await bcrypt.compare(password,user.password);
+    const isMatch=await bcrypt.compare(password,findUser.password);
 
     if(!isMatch){
         res.status(400).json({
             status: responseStatus.failed,
-            message: "Invalid Email "
+            message: "Invalid Email or Password"
         })
     }
-
     // generate token
-    const token=await generateJWT({
+
+    const user=await User.findOne({email}).select('-password');
+
+    const token= await generateJWT({
         name: user.name,
         email: user.email,
         id: user._id
     })
-
     res.status(200).json({
         status: responseStatus.success,
         message: "User Logged In Successfully",
