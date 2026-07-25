@@ -24,7 +24,7 @@ const validationAddDoctorArr = ()=> {
     return [
         body("name").notEmpty().withMessage("Name is required"),
         body("speciality").notEmpty().withMessage("Speciality is required"),
-        body("yearsOfExperience").isNumeric().withMessage("Years of experience must be a number"),
+        body("yearsOfExperience").isString().withMessage("Years of experience must be a string"),
         body("description").notEmpty().withMessage("Description is required"),
         body("image").notEmpty().withMessage("Image is required"),
     ]

@@ -3,12 +3,17 @@ import { addDoctor, getAllDoctors, getDoctorById } from "../controllers/doctorCo
 import { validationAddDoctorArr } from "../utlis/validationArr.js";
 import CheckValidation from "../middlewares/CheckValidation.js";
 import upload from "../config/multer.js";
+import verifyToken from "../middlewares/verifyToken.js";
 
 const doctorRouter=express.Router();
 
-doctorRouter.post("/add",upload.single("image"),validationAddDoctorArr(),CheckValidation,addDoctor)
-doctorRouter.get("/all",getAllDoctors)
-doctorRouter.get("/:id",getDoctorById)
+doctorRouter.post("/add",upload.single("image"),
+    validationAddDoctorArr(),
+    CheckValidation,
+    verifyToken,
+    addDoctor)
+doctorRouter.get("/all",verifyToken,getAllDoctors)
+doctorRouter.get("/:id",verifyToken,getDoctorById)
 
 
 

@@ -1,8 +1,8 @@
 import ErrorHandler from "../utlis/ErrorHandler.js";
-import User from "../models/UserSchema.js";
 import responseStatus from "../utlis/resStatus.js";
 import bcrypt from "bcryptjs";
 import generateJWT from "../utlis/generateJWT.js";
+import User from "../models/UserSchema.js";
 
 
 export const registerUser = ErrorHandler(async (req,res,next)=> {
@@ -36,7 +36,7 @@ export const registerUser = ErrorHandler(async (req,res,next)=> {
         id:user._id
     })
 
-    req.session.userId=user._id.toString();
+    req.session.token=token;
 
     const newUser=await User.findById(user._id).select('-password');
 
@@ -81,7 +81,7 @@ export const loginUser = ErrorHandler(async (req,res,next)=> {
         email: user.email,
         id: user._id
     })
-    req.session.userId=user._id.toString();
+    req.session.token=token;
 
 
     return res.status(200).json({
@@ -97,19 +97,12 @@ export const loginUser = ErrorHandler(async (req,res,next)=> {
 
 export const logoutUser = ErrorHandler(async (req,res,next)=> {
 
-    const userId=req.session.userId;
+    const token = req.session?.token;
 
-    if(!userId){
+    if(!token){
         return res.status(400).json({
             status: responseStatus.failed,
             message: "User Not Logged In"
-        })
-    }
-    const findUser=await User.findById(userId);
-    if(!findUser){
-        return res.status(404).json({
-            status: responseStatus.failed,
-            message: "User Not Found"
         })
     }
 
