@@ -7,7 +7,7 @@ import User from "../models/UserSchema.js";
 
 export const registerUser = ErrorHandler(async (req,res,next)=> {
 
-    const {name,email,password}=req.body;
+    const {name,email,password,role}=req.body;
     const isExist= await User.findOne({email});
 
     if(isExist){
@@ -24,16 +24,15 @@ export const registerUser = ErrorHandler(async (req,res,next)=> {
     const user=await User.create({
         name,
         email,
-        password : hashedPassword
+        password : hashedPassword,
+        role
     })
 
     await user.save();
 
     // generate token and add session id
     const token=await generateJWT({
-        name,
-        email,
-        id:user._id
+        id:user._id,
     })
 
     req.session.token=token;

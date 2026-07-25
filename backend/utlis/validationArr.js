@@ -45,11 +45,23 @@ const validationCreateAppointmentArr = ()=> {
     ]
 }
 
+const validationAddDepartmentArr = ()=> {
+    return [
+        body("name")
+            .notEmpty().withMessage("Name is required")
+            .isLength({ min: 2, max: 100 }).withMessage("Name must be between 2 and 100 characters"),
+        body("description")
+            .notEmpty().withMessage("Description is required")
+            .isLength({ min: 10, max: 500 }).withMessage("Description must be between 10 and 500 characters"),
+        body("image").notEmpty().withMessage("Image is required"),
+    ]
+} 
 
 
 export {
     validationRegisterArr,
     validationLoginArr,
     validationAddDoctorArr,
-    validationCreateAppointmentArr
+    validationCreateAppointmentArr,
+    validationAddDepartmentArr
 };

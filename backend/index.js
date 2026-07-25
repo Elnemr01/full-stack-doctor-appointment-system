@@ -8,6 +8,7 @@ import session from "express-session";
 import MongoStore from "connect-mongodb-session";
 import doctorRouter from "./routers/DoctorRouter.js";
 import appointmentRouter from "./routers/AppointmentRouter.js";
+import departmentRouter from "./routers/DepartmentRouter.js";
 
 configDotenv();
 
@@ -45,6 +46,7 @@ app.use(session({
 app.use("/users", userRouter);
 app.use("/doctors", doctorRouter);
 app.use("/appointments", appointmentRouter);
+app.use("/departments", departmentRouter);
 
 app.use("*splat", (req, res) => {
     res.status(404).json({
