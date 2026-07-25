@@ -30,5 +30,26 @@ const validationAddDoctorArr = ()=> {
     ]
 }
 
+const validationCreateAppointmentArr = ()=> {
+    return [
+        body("doctorId")
+            .notEmpty().withMessage("Doctor ID is required")
+            .isMongoId().withMessage("Invalid Doctor ID format"),
+        body("reason")
+            .notEmpty().withMessage("Reason is required")
+            .isString().withMessage("Reason must be a string")
+            .isLength({ min: 5, max: 500 }).withMessage("Reason must be between 5 and 500 characters"),
+        body("date")
+            .notEmpty().withMessage("Date is required")
+            .isISO8601().withMessage("Invalid date format (use ISO 8601 format)"),
+    ]
+}
 
-export { validationRegisterArr, validationLoginArr, validationAddDoctorArr };
+
+
+export {
+    validationRegisterArr,
+    validationLoginArr,
+    validationAddDoctorArr,
+    validationCreateAppointmentArr
+};
