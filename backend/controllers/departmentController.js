@@ -7,7 +7,7 @@ import responseStatus from "../utlis/resStatus.js";
 
 export const getAllDepartments = ErrorHandler(async(req,res)=> {
 
-    const departments = await Department.find({})
+    const departments = await Department.find()
 
     return res.status(200).json({
         status: responseStatus.success,
@@ -21,18 +21,20 @@ export const getAllDepartments = ErrorHandler(async(req,res)=> {
 
 export const addDepartment = ErrorHandler(async(req,res)=> {
     const { name, description } = req.body;
-    const image=req.file.filename
-    const department = await Department.create({
+    const image=req.file.path;
+    const addDepartment = await Department.create({
         name,
         description,
         image
     })
 
+    const savedDepartment = await addDepartment.save();
+
     return res.status(201).json({
         status: responseStatus.success,
         message: "Department added successfully",
         data: {
-            department
+            department: savedDepartment
         }
     })
 })
