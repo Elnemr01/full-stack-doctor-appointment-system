@@ -4,11 +4,13 @@ import UserRoutes from './protectedRoutes/UserRoutes'
 import LoggedRoutes from './protectedRoutes/LoggedRoutes'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
   return (
     <div className="App">
+      <Toaster/>
       <Routes>
         {/* user routes - wrapper without path */}
         <Route element={<UserRoutes/>}>

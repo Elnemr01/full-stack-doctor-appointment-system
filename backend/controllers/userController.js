@@ -43,7 +43,7 @@ export const registerUser = ErrorHandler(async (req,res,next)=> {
         status: responseStatus.success,
         message: "User Registered Successfully",
         data: {
-            newUser,
+            user:newUser,
             token
         }
     }) 

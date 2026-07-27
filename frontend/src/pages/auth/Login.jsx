@@ -1,46 +1,27 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { useAuthActions } from '../../hooks/auth/useAuth';
-import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
+import useLogin from '@/hooks/auth/useLogin';
+import { loginValidationSchema } from '@/constants/schemas/authSchema';
 
-const validationSchema = Yup.object({
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
-});
-
-const initialValues = {
-  email: '',
-  password: '',
-};
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { login } = useAuthActions();
+  const { login,isPending } = useLogin();
+
+  const initialValues=useMemo(()=> {
+    return {
+      email: '',
+      password: '',
+    }
+  },[])
 
   const formik = useFormik({
     initialValues,
-    validationSchema,
-    onSubmit: async (values, { setSubmitting }) => {
-      setError('');
-      setIsLoading(true);
-      try {
-        await login(values);
-        navigate('/');
-      } catch (err) {
-        setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
-      } finally {
-        setIsLoading(false);
-        setSubmitting(false);
-      }
+    validationSchema: loginValidationSchema,
+    onSubmit: async (values) => {
+      login(values);
     },
   });
 
@@ -65,12 +46,6 @@ const Login = () => {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={formik.handleSubmit}>
-          {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
 
           <div className="space-y-4">
             <div>
@@ -133,33 +108,13 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                Forgot your password?
-              </a>
-            </div>
-          </div>
-
           <div>
             <button
               type="submit"
-              disabled={isLoading || formik.isSubmitting}
+              disabled={isPending}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isLoading || formik.isSubmitting ? (
+              {isPending  ? (
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
                   <span>Signing in...</span>

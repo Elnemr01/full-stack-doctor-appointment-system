@@ -9,7 +9,8 @@ export const useAuth= ()=> {
 
 const UserProvider = ({children}) => {
 
-    const [user,setUser]= useState(()=> localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
+    const [user,setUser]= useState(()=> JSON.parse(localStorage.getItem('user')) ? 
+    JSON.parse(localStorage.getItem('user')) : null);
 
     const data={
         user,
