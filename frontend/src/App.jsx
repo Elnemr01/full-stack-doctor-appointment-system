@@ -5,6 +5,7 @@ import LoggedRoutes from './protectedRoutes/LoggedRoutes'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import { Toaster } from 'react-hot-toast'
+import Home from './pages/home/Home'
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         {/* user routes - wrapper without path */}
         <Route element={<UserRoutes/>}>
+          <Route path='/' element={<Home/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
         </Route>
