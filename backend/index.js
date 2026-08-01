@@ -9,6 +9,7 @@ import MongoStore from "connect-mongodb-session";
 import doctorRouter from "./routers/DoctorRouter.js";
 import appointmentRouter from "./routers/AppointmentRouter.js";
 import departmentRouter from "./routers/DepartmentRouter.js";
+import passport from "./config/passport.js";
 
 configDotenv();
 
@@ -40,6 +41,10 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24, // 1 day
     }
 }))
+
+// passport configuration
+app.use(passport.initialize());
+app.use(passport.session());
 
 // app routing
 

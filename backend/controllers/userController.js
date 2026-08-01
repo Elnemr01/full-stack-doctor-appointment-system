@@ -3,6 +3,7 @@ import responseStatus from "../utlis/resStatus.js";
 import bcrypt from "bcryptjs";
 import generateJWT from "../utlis/generateJWT.js";
 import User from "../models/UserSchema.js";
+import passport from "../config/passport.js";
 
 
 export const registerUser = ErrorHandler(async (req,res,next)=> {
@@ -92,6 +93,47 @@ export const loginUser = ErrorHandler(async (req,res,next)=> {
         }
     })
 })
+
+export const loginUserWithPassport = ErrorHandler(async (req, res, next) => {
+    passport.authenticate("local", async (err, user, info) => {
+
+        if (!user) {
+        return res.status(401).json({
+            status: responseStatus.failed,
+            message: info?.message || "Invalid Email or Password",
+        });
+        }
+
+        req.login(user, async (err) => {
+        if (err) {
+            return res.status(500).json({
+            status: responseStatus.failed,
+            message: "Login failed",
+            error: err.message,
+            });
+        }
+
+        const { password, ...userData } = user._doc;
+
+        const token = await generateJWT({
+            name: user.name,
+            email: user.email,
+            id: user._id,
+        });
+
+        req.session.token = token;
+
+        return res.status(200).json({
+            status: responseStatus.success,
+            message: "User Logged In Successfully",
+            data: {
+                user: userData,
+                token,
+            },
+        });
+        });
+    })(req, res, next);
+});
 
 
 export const logoutUser = ErrorHandler(async (req,res,next)=> {
