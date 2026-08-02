@@ -9,7 +9,7 @@ export const useAuth= ()=> {
 
 const UserProvider = ({children}) => {
 
-    const [user,setUser]= useState(()=> JSON.parse(localStorage.getItem('user')) ? 
+    const [user,setUser]= useState(()=> JSON.parse(localStorage.getItem('user')) || localStorage.getItem('user')!=="undefined"? 
     JSON.parse(localStorage.getItem('user')) : null);
 
     const data={

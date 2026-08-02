@@ -1,166 +1,144 @@
-import ErrorHandler from "../utlis/ErrorHandler.js";
-import responseStatus from "../utlis/resStatus.js";
-import bcrypt from "bcryptjs";
-import generateJWT from "../utlis/generateJWT.js";
-import User from "../models/UserSchema.js";
-import passport from "../config/passport.js";
+import ErrorHandler from '../utlis/ErrorHandler.js';
+import responseStatus from '../utlis/resStatus.js';
+import bcrypt from 'bcryptjs';
+import User from '../models/UserSchema.js';
+import passport from '../config/passport.js';
+import { generateToken, setSessionToken, clearSession, createUserResponse } from '../utlis/session.js';
 
+const createUserSession = async (req, user) => {
+    const token = await generateToken({
+        name: user.name,
+        email: user.email,
+        id: user._id,
+    });
 
-export const registerUser = ErrorHandler(async (req,res,next)=> {
+    setSessionToken(req, token);
 
-    const {name,email,password,role}=req.body;
-    const isExist= await User.findOne({email});
+    return createUserResponse(user, token);
+};
 
-    if(isExist){
+export const registerUser = ErrorHandler(async (req, res, next) => {
+    const { name, email, password, role } = req.body;
+
+    const isExist = await User.findOne({ email });
+    if (isExist) {
         return res.status(400).json({
             status: responseStatus.failed,
-            message: "User Already Exist"
-        })
+            message: 'User Already Exist',
+        });
     }
 
-    // hash the password
-    const hashedPassword=await bcrypt.hash(password,10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // add new user
-    const user=await User.create({
+    const user = await User.create({
         name,
         email,
-        password : hashedPassword,
-        role
-    })
+        password: hashedPassword,
+        role,
+    });
 
     await user.save();
 
-    // generate token and add session id
-    const token=await generateJWT({
-        id:user._id,
-    })
+    const sessionData = await createUserSession(req, user);
 
-    req.session.token=token;
-
-    const newUser=await User.findById(user._id).select('-password');
+    const newUser = await User.findById(user._id).select('-password');
 
     return res.status(201).json({
         status: responseStatus.success,
-        message: "User Registered Successfully",
+        message: 'User Registered Successfully',
         data: {
-            user:newUser,
-            token
-        }
-    }) 
+            user: newUser,
+            ...sessionData,
+        },
+    });
+});
 
-
-})
-
-
-export const loginUser = ErrorHandler(async (req,res,next)=> {
-    const {email,password}=req.body;
-
-    const findUser=await User.findOne({email});
-    if(!findUser){
-        return res.status(404).json({
-            status: responseStatus.failed,
-            message: "User Not Found"
-        })
-    }
-    // check the password
-    const isMatch=await bcrypt.compare(password,findUser.password);
-
-    if(!isMatch){
-        return res.status(400).json({
-            status: responseStatus.failed,
-            message: "Invalid Email or Password"
-        })
-    }
-    // generate token and add session id
-
-    const user=await User.findOne({email}).select('-password');
-
-    const token= await generateJWT({
-        name: user.name,
-        email: user.email,
-        id: user._id
-    })
-    req.session.token=token;
-
-
-    return res.status(200).json({
-        status: responseStatus.success,
-        message: "User Logged In Successfully",
-        data: {
-            user,
-            token
-        }
-    })
-})
-
-export const loginUserWithPassport = ErrorHandler(async (req, res, next) => {
-    passport.authenticate("local", async (err, user, info) => {
-
+export const loginUser = ErrorHandler(async (req, res, next) => {
+    passport.authenticate('local', async (err, user, info) => {
         if (!user) {
-        return res.status(401).json({
-            status: responseStatus.failed,
-            message: info?.message || "Invalid Email or Password",
-        });
-        }
-
-        req.login(user, async (err) => {
-        if (err) {
-            return res.status(500).json({
-            status: responseStatus.failed,
-            message: "Login failed",
-            error: err.message,
+            return res.status(401).json({
+                status: responseStatus.failed,
+                message: info?.message || 'Invalid Email or Password',
             });
         }
 
-        const { password, ...userData } = user._doc;
+        req.login(user, async (loginErr) => {
+            if (loginErr) {
+                return res.status(500).json({
+                    status: responseStatus.error,
+                    message: 'Login failed',
+                    error: loginErr.message,
+                });
+            }
 
-        const token = await generateJWT({
-            name: user.name,
-            email: user.email,
-            id: user._id,
-        });
+            const sessionData = await createUserSession(req, user);
 
-        req.session.token = token;
-
-        return res.status(200).json({
-            status: responseStatus.success,
-            message: "User Logged In Successfully",
-            data: {
-                user: userData,
-                token,
-            },
-        });
+            return res.status(200).json({
+                status: responseStatus.success,
+                message: 'User Logged In Successfully',
+                data: sessionData,
+            });
         });
     })(req, res, next);
 });
 
+export const loginUserWithGithub = ErrorHandler(async (req, res, next) => {
+    const user = req.user;
 
-export const logoutUser = ErrorHandler(async (req,res,next)=> {
-
-    const token = req.session?.token;
-
-    if(!token){
-        return res.status(400).json({
+    if (!user) {
+        return res.status(401).json({
             status: responseStatus.failed,
-            message: "User Not Logged In"
-        })
+            message: 'GitHub authentication failed',
+        });
     }
 
-    // destroy session
-    req.session.destroy((err)=> {
-        if(err){
-            return res.status(500).json({
-                status: responseStatus.error,
-                message: "Internal Server Error"
-            })
-        }
-    })
+    const sessionData = await createUserSession(req, user);
 
     return res.status(200).json({
         status: responseStatus.success,
-        message: "User Logged Out Successfully"
-    })
-})
+        message: 'User Logged In Successfully',
+        data: sessionData,
+    });
+});
 
+export const logoutUser = ErrorHandler(async (req, res, next) => {
+    const token = req.session?.token;
 
+    if (!token) {
+        return res.status(400).json({
+            status: responseStatus.failed,
+            message: 'User Not Logged In',
+        });
+    }
+
+    await clearSession(req);
+
+    return res.status(200).json({
+        status: responseStatus.success,
+        message: 'User Logged Out Successfully',
+    });
+});
+
+export const getMe = ErrorHandler(async (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({
+            status: responseStatus.failed,
+            message: 'User Not Authenticated',
+        });
+    }
+
+    const user = await User.findById(req.user.id).select('-password');
+
+    if (!user) {
+        return res.status(404).json({
+            status: responseStatus.failed,
+            message: 'User Not Found',
+        });
+    }
+
+    return res.status(200).json({
+        status: responseStatus.success,
+        message: 'User Fetched Successfully',
+        data: { user },
+    });
+});

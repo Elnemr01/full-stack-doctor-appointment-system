@@ -8,5 +8,9 @@ export const registerFn = async (data)=> await client.post('/users/register',dat
     .then(res=>res.data)
 
 
+export const getMeFn = async (data)=> await client.get('/users/me',data)
+    .then(res=>res.data)
+
+
 
 

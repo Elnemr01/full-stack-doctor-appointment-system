@@ -20,10 +20,14 @@ const Login = () => {
   const formik = useFormik({
     initialValues,
     validationSchema: loginValidationSchema,
-    onSubmit: async (values) => {
+    onSubmit: (values) => {
       login(values);
     },
   });
+
+  const handleGoToGithub = ()=> {
+    window.location.href=`${import.meta.env.VITE_BASE_URL}/users/auth/github`
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -122,6 +126,11 @@ const Login = () => {
               ) : (
                 'Sign in'
               )}
+            </button>
+            <button 
+            type='button'
+            onClick={()=> handleGoToGithub()}>
+              login with github
             </button>
           </div>
         </form>

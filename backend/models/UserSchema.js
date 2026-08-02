@@ -5,17 +5,21 @@ const UserSchema= new mongoose.Schema({
     name: String,
     email: {
         type: String,
-        required: true,
+        // required: true,
         unique: true
     },
     password: {
         type: String,
-        required: true
+        // required: true
     },
     role : {
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
+    },
+    githubId: {
+        type: String,
+        unique: true,
     }
 }, {
     timestamps: true

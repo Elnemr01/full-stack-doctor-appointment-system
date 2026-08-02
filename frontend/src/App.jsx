@@ -6,6 +6,7 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import { Toaster } from 'react-hot-toast'
 import Home from './pages/home/Home'
+import Callback from './pages/auth/Callback'
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
           {/* <Route path='/' element={<Home/>}/> */}
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
+          <Route path='/callback' element={<Callback/>}/>
         </Route>
 
         {/* logged-in routes - wrapper without path */}
