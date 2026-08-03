@@ -1,3 +1,4 @@
+import { useAuth } from '@/contextAPI/UserProvider';
 import { getMeFn } from '@/services/auth/services'
 import { useQuery } from '@tanstack/react-query'
 import React, { useEffect } from 'react'
@@ -5,6 +6,7 @@ import { useNavigate } from 'react-router';
 
 const useGetMe = () => {
     const navigate = useNavigate();
+    const {setUser}=useAuth();
     const {data,isLoading, isError} = useQuery({
         queryKey:['getMe'],
         queryFn: ()=> getMeFn(),
@@ -12,9 +14,9 @@ const useGetMe = () => {
 
     useEffect(() => {
         if (data) {
-            console.log(data);
-            localStorage.setItem('user', JSON.stringify(data?.data.user))
-            navigate('/');
+            setUser(data?.data.user);
+            localStorage.setItem('user', JSON.stringify(data?.data.user));
+            navigate('/', { replace: true });
         }
     }, [data])
 

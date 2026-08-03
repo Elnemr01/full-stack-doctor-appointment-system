@@ -83,22 +83,13 @@ export const loginUser = ErrorHandler(async (req, res, next) => {
 });
 
 export const loginUserWithGithub = ErrorHandler(async (req, res, next) => {
-    const user = req.user;
+    await createUserSession(req, req.user);
+    res.redirect(`${process.env.FRONTEND_URL}/callback`);
+});
 
-    if (!user) {
-        return res.status(401).json({
-            status: responseStatus.failed,
-            message: 'GitHub authentication failed',
-        });
-    }
-
-    const sessionData = await createUserSession(req, user);
-
-    return res.status(200).json({
-        status: responseStatus.success,
-        message: 'User Logged In Successfully',
-        data: sessionData,
-    });
+export const loginUserWithGoogle = ErrorHandler(async (req, res, next) => {
+    await createUserSession(req, req.user);
+    res.redirect(`${process.env.FRONTEND_URL}/callback`);
 });
 
 export const logoutUser = ErrorHandler(async (req, res, next) => {

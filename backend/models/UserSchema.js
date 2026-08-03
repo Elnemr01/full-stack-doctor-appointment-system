@@ -20,6 +20,10 @@ const UserSchema= new mongoose.Schema({
     githubId: {
         type: String,
         unique: true,
+    },
+    googleId: {
+        type: String,
+        unique: true,
     }
 }, {
     timestamps: true

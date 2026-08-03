@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff} from 'lucide-react';
 import useLogin from '@/hooks/auth/useLogin';
 import { loginValidationSchema } from '@/constants/schemas/authSchema';
 
@@ -25,8 +25,8 @@ const Login = () => {
     },
   });
 
-  const handleGoToGithub = ()=> {
-    window.location.href=`${import.meta.env.VITE_BASE_URL}/users/auth/github`
+  const handleGoToAuthApplication = (strategy)=> {
+    window.location.href=`${import.meta.env.VITE_BASE_URL}/users/auth/${strategy}`
   }
 
   return (
@@ -127,11 +127,25 @@ const Login = () => {
                 'Sign in'
               )}
             </button>
-            <button 
-            type='button'
-            onClick={()=> handleGoToGithub()}>
-              login with github
-            </button>
+            
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <button
+                type="button"
+                onClick={() => handleGoToAuthApplication('github')}
+                className="flex items-center cursor-pointer justify-center gap-2 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+              >
+                {/* <Github className="w-5 h-5" /> */}
+                <span>GitHub</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleGoToAuthApplication('google')}
+                className="flex items-center cursor-pointer justify-center gap-2 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+              >
+                {/* <Chrome className="w-5 h-5 text-red-500" /> */}
+                <span>Google</span>
+              </button>
+            </div>
           </div>
         </form>
 

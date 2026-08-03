@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 export const verifyToken = ErrorHandler(async (req, res, next) => {
     const token = req.session?.token;
-
     if (!token) {
         return res.status(401).json({
             status: responseStatus.failed,
