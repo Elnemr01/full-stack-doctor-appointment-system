@@ -11,6 +11,8 @@ import userRouter from './routers/UserRouter.js';
 import doctorRouter from './routers/DoctorRouter.js';
 import appointmentRouter from './routers/AppointmentRouter.js';
 import departmentRouter from './routers/DepartmentRouter.js';
+import { rateLimitOpts } from './config/rateLimiting.js';
+import { rateLimit } from 'express-rate-limit'
 
 configDotenv();
 connectDB();
@@ -20,6 +22,7 @@ const app = express();
 app.use(express.json());
 app.use(cors(corsConfig));
 app.use(session(sessionConfig));
+app.use(rateLimit(rateLimitOpts));
 
 app.use(passport.initialize());
 app.use(passport.session());
