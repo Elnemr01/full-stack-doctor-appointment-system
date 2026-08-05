@@ -28,7 +28,7 @@ const HomeSlider = () => {
             return;
         }
 
-        navigate("/appointment",{replace:true});
+        navigate("/doctors",{replace:true});
     }
 
     return (
@@ -55,9 +55,10 @@ const HomeSlider = () => {
                 <button
                 type="button"
                 onClick={()=> handleNavigate()}
-                className="inline-block bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors"
+                className="inline-block bg-white text-blue-600 px-8 cursor-pointer
+                py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors"
                 >
-                    Book Appointment
+                    Browse Doctors
                 </button>
             </div>
         </div>

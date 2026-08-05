@@ -7,6 +7,7 @@ import Register from './pages/auth/Register'
 import { Toaster } from 'react-hot-toast'
 import Home from './pages/home/Home'
 import Callback from './pages/auth/Callback'
+import AllDoctors from './pages/doctors/AllDoctors'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
         {/* logged-in routes - wrapper without path */}
         <Route element={<LoggedRoutes/>}>
           <Route index path='/' element={<Home/>}/>
+          <Route index path='/doctors' element={<AllDoctors/>}/>
         </Route>
       </Routes>
     </div>

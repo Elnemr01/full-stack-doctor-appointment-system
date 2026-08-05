@@ -11,6 +11,9 @@ export const registerFn = async (data)=> await client.post('/users/register',dat
 export const getMeFn = async (data)=> await client.get('/users/me',data)
     .then(res=>res.data)
 
+export const logoutFn = async ()=> await client.post('/users/logout')
+.then(res=>res.data)
+
 
 
 

@@ -9,17 +9,18 @@ const client = axios.create({
     },
 });
 
-// client.interceptors.response.use(
-//     (response) => {
-//         return response;
-//     },
-//     (error) => {
-//         if (error.response && error.response.status === 401) {
-//             window.location.href = "/login";
-//         }
-//         return Promise.reject(error);
-//     }
-// );
+client.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            window.location.href = "/login";
+            localStorage.removeItem('user');
+        }
+        return Promise.reject(error);
+    }
+);
 
 
 
