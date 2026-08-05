@@ -16,7 +16,6 @@ function App() {
       <Routes>
         {/* user routes - wrapper without path */}
         <Route element={<UserRoutes/>}>
-          {/* <Route path='/' element={<Home/>}/> */}
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/callback' element={<Callback/>}/>
@@ -24,7 +23,7 @@ function App() {
 
         {/* logged-in routes - wrapper without path */}
         <Route element={<LoggedRoutes/>}>
-          <Route path='/' element={<h1>doctor appointment system</h1>}/>
+          <Route index path='/' element={<Home/>}/>
         </Route>
       </Routes>
     </div>
