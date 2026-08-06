@@ -27,12 +27,16 @@ export const addDoctor=ErrorHandler(async(req,res,next)=> {
 
 })
 
-export const getAllDoctors=ErrorHandler(async(req,res,next)=> {
-    const doctors=await Doctor.find();
+export const getAllDoctors=ErrorHandler(async(req,res)=> {
+
+    const {page=1,limit=10}=req.query;
+    const doctors=await Doctor.find().limit(limit * 1).skip((page - 1) * limit);
 
     return res.status(200).json({
         status:responseStatus.success,
         message:"Doctors fetched successfully",
+        page:parseInt(page),
+        limit:parseInt(limit),
         data:doctors
     })
 })

@@ -56,8 +56,10 @@ export const deleteAppointment = ErrorHandler(async (req, res, next) => {
 })
 
 export const getUserAppointments = ErrorHandler(async (req, res, next) => {
+    
     const userId = req.user.id;
-    const appointments = await Appointment.find({ userId }).populate("doctorId");
+    const {page=1, limit=10} = req.query;
+    const appointments = await Appointment.find({ userId }).populate("doctorId").limit(limit * 1).skip((page - 1) * limit);
 
     res.status(200).json({
         status: responseStatus.success,
