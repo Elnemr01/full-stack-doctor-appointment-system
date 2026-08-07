@@ -15,3 +15,8 @@ export const addDoctorFn = async (formData) => {
     });
     return response.data;
 }
+
+export const getDoctorByIdFn = async (id) => {
+    const response = await client.get(`/doctors/${id}`);
+    return response.data;
+}

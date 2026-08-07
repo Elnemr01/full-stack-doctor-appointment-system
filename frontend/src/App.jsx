@@ -11,6 +11,7 @@ import AllDoctors from './pages/doctors/AllDoctors'
 import OneDoctor from './pages/doctors/OneDoctor'
 import AddDoctor from './pages/doctors/AddDoctor'
 import AddDepartment from './pages/departments/AddDepartment'
+import Appointments from './pages/appointments/Appointments'
 
 function App() {
 
@@ -28,10 +29,15 @@ function App() {
         {/* logged-in routes - wrapper without path */}
         <Route element={<LoggedRoutes/>}>
           <Route index path='/' element={<Home/>}/>
+
           <Route index path='/doctors' element={<AllDoctors/>}/>
           <Route index path='/doctors/:id' element={<OneDoctor/>}/>
           <Route index path='/doctors/add' element={<AddDoctor/>}/>
+
           <Route index path='/departments/add' element={<AddDepartment/>}/>
+
+          <Route index path='/appointments' element={<Appointments/>}/>
+          
         </Route>
       </Routes>
     </div>
