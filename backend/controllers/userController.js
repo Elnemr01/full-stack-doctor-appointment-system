@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/UserSchema.js';
 import passport from '../config/passport.js';
 import { generateToken, setSessionToken, clearSession, createUserResponse } from '../utlis/session.js';
+import nodemailer from 'nodemailer';
 
 const createUserSession = async (req, user) => {
     const token = await generateToken({
@@ -42,6 +43,33 @@ export const registerUser = ErrorHandler(async (req, res, next) => {
     const sessionData = await createUserSession(req, user);
 
     const newUser = await User.findById(user._id).select('-password');
+
+    // send email to welcome user
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+
+    const emailOptions = {
+        from: process.env.EMAIL_USER,
+        to: newUser.email,
+        subject: 'Welcome to Our Platform',
+        html: `<p>Hello ${newUser.name},</p><p>Welcome to our platform! We're excited to have you on board.
+        </p><p>Best regards,<br>The Team</p>`,
+        text: `Hello ${newUser.name},\n\nWelcome to our platform! We're excited to have you onboard.\n\nBest regards,\nThe Team`,
+    };
+
+    await transporter.sendMail(emailOptions,(error, info)=> {
+        if (error) {
+            console.error('Error sending email:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
 
     return res.status(201).json({
         status: responseStatus.success,
