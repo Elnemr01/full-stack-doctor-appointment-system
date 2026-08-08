@@ -13,6 +13,7 @@ import appointmentRouter from './routers/AppointmentRouter.js';
 import departmentRouter from './routers/DepartmentRouter.js';
 import { rateLimitOpts } from './config/rateLimiting.js';
 import { rateLimit } from 'express-rate-limit'
+import passwordRouter from './routers/PasswordRouter.js';
 
 configDotenv();
 connectDB();
@@ -28,6 +29,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/users', userRouter);
+app.use('/password', passwordRouter);
 app.use('/doctors', doctorRouter);
 app.use('/appointments', appointmentRouter);
 app.use('/departments', departmentRouter);

@@ -153,37 +153,6 @@ const Register = () => {
               <p className="mt-1 text-sm text-red-600">{formik.errors.password}</p>
             )}
 
-            {formik.values.password && (
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-500">Password requirements:</p>
-                <ul className="space-y-0.5">
-                  {passwordRequirements.map((req, index) => (
-                    <li key={index} className="flex items-center gap-1.5 text-xs">
-                      <span
-                        className={`w-3.5 h-3.5 rounded-full border shrink-0 ${
-                          req.test(formik.values.password)
-                            ? 'bg-green-500 border-green-500'
-                            : 'border-gray-300'
-                        }`}
-                      >
-                        {req.test(formik.values.password) && (
-                          <svg className="w-2.5 h-2.5 text-white mx-auto my-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </span>
-                      <span
-                        className={`transition-colors ${
-                          req.test(formik.values.password) ? 'text-green-600' : 'text-gray-500'
-                        }`}
-                      >
-                        {req.label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
 
           <div>

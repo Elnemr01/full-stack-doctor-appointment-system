@@ -12,6 +12,8 @@ import OneDoctor from './pages/doctors/OneDoctor'
 import AddDoctor from './pages/doctors/AddDoctor'
 import AddDepartment from './pages/departments/AddDepartment'
 import Appointments from './pages/appointments/Appointments'
+import VerfiyEmail from './pages/auth/VerfiyEmail'
+import ResetPassword from './pages/auth/ResetPassword'
 
 function App() {
 
@@ -24,6 +26,8 @@ function App() {
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/callback' element={<Callback/>}/>
+          <Route path='/verify-email' element={<VerfiyEmail/>}/>
+          <Route path='/reset-password' element={<ResetPassword/>}/>
         </Route>
 
         {/* logged-in routes - wrapper without path */}
