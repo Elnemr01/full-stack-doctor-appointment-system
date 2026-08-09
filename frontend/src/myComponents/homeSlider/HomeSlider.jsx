@@ -31,17 +31,17 @@ const HomeSlider = () => {
         navigate("/doctors",{replace:true});
     }
 
-    return (
-        <section className="relative">
+return (
+        <section className="relative w-full min-h-screen">
         <Carousel
             items={slides}
             autoplay={true}
-            interval={2000}
+            interval={3000}
             showArrows={true}
             showDots={true}
-            className="h-150 "
+            className="w-full h-screen"
             classNames={{
-                item: "h-full w-full object-cover",
+                item: "w-full h-full object-cover",
             }}
         />
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">

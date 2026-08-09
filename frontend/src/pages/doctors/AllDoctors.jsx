@@ -8,36 +8,14 @@ import { Search, Filter, ChevronDown, Stethoscope } from 'lucide-react'
 
 const AllDoctors = () => {
     const [page, setPage] = useState(1);
-    const { doctors, isLoading, isError, error, refetch } = useGetDoctors(page);
+    const { doctors, isLoading, isError, error } = useGetDoctors(page);
 
 
 
-    const handleRetry = () => {
-        refetch();
-    };
+    if (isLoading) return <Loading />
 
-    if (isLoading) {
-        return (
-            <MainLayout>
-                <div className="container mx-auto px-4 py-8">
-                    <Loading />
-                </div>
-            </MainLayout>
-        );
-    }
-
-    if (isError) {
-        return (
-            <MainLayout>
-                <div className="container mx-auto px-4 py-8">
-                    <Error 
-                        message={error?.message || 'Failed to load doctors'} 
-                        onRetry={handleRetry} 
-                    />
-                </div>
-            </MainLayout>
-        );
-    }
+    if (isError) 
+        return <Error />
 
     return (
         <MainLayout>

@@ -1,4 +1,5 @@
 import useGetDoctorById from '@/hooks/doctors/useGetDoctorById';
+import BookAppointment from '@/myComponents/bookAppointment/BookAppointment';
 import DoctorBanner from '@/myComponents/doctorBanner/DoctorBanner';
 import MainLayout from '@/myComponents/mainLayout/MainLayout'
 import Error from '@/myComponents/models/Error';
@@ -19,6 +20,7 @@ const OneDoctor = () => {
         <MainLayout>
             <div className="container">
                 <DoctorBanner doctor={doctor}/>
+                <BookAppointment />
             </div>
         </MainLayout>
     )

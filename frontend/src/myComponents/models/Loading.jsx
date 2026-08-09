@@ -10,7 +10,7 @@ const Loading = () => {
                         </svg>
                     </div>
                 </div>
-                <p className="text-muted-foreground text-lg font-medium">Loading doctors...</p>
+                <p className="text-muted-foreground text-lg font-medium">Loading...</p>
                 <p className="text-muted-foreground/60 text-sm">Please wait while we fetch the best care for you</p>
             </div>
         </div>

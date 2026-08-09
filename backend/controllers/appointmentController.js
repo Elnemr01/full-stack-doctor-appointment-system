@@ -18,6 +18,16 @@ export const createAppointment = ErrorHandler(async (req, res, next) => {
         })
     }
 
+    // check if there is already an appointment for the same doctor and user at the same date and time
+    const existingAppointment = await Appointment.findOne({ doctorId, userId, date });
+
+    if(existingAppointment) {
+        return res.status(400).json({
+            status: responseStatus.failed,
+            message: "Appointment already exists for this time slot",
+        })
+    }
+
     const createdAppointment= await Appointment.create({
         doctorId,
         userId,
@@ -25,7 +35,7 @@ export const createAppointment = ErrorHandler(async (req, res, next) => {
         date
     })
 
-    const savedAppointment = await createdAppointment.save();
+    const savedAppointment = await createdAppointment.save()
 
     res.status(201).json({
         status: responseStatus.success,
@@ -59,7 +69,8 @@ export const getUserAppointments = ErrorHandler(async (req, res, next) => {
     
     const userId = req.user.id;
     const {page=1, limit=10} = req.query;
-    const appointments = await Appointment.find({ userId }).populate("doctorId").limit(limit * 1).skip((page - 1) * limit);
+    const appointments = await Appointment.find({ userId })
+    .populate("doctorId").limit(limit * 1).skip((page - 1) * limit);
 
     res.status(200).json({
         status: responseStatus.success,
