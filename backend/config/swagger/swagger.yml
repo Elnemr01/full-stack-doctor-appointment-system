@@ -1,0 +1,705 @@
+openapi: 3.0.0
+info:
+  title: Doctor System API
+  description: >
+    API documentation for the Doctor System backend (Users, Doctors,
+    Appointments, Departments, Password recovery, and OAuth via GitHub/Google).
+    Authentication is session-based, using a session cookie (express-session).
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Users
+  - name: Password
+  - name: Doctors
+  - name: Appointments
+  - name: Departments
+
+paths:
+  /users/register:
+    post:
+      tags: [Users]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  example: Ahmed Elnemr
+                email:
+                  type: string
+                  format: email
+                  example: ahmed@example.com
+                password:
+                  type: string
+                  format: password
+                  description: "Min 6 chars, at least 1 uppercase, 1 number, 1 special character"
+                  example: Passw0rd!
+                role:
+                  type: string
+                  enum: [user, admin]
+                  example: user
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '400':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /users/login:
+    post:
+      tags: [Users]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Logged in successfully
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Session cookie is set on successful login.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/logout:
+    post:
+      tags: [Users]
+      summary: Logout the current user
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: User not logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/auth/github:
+    get:
+      tags: [Users]
+      summary: Start GitHub OAuth login
+      description: Redirects the browser to GitHub for authentication.
+      responses:
+        '302':
+          description: Redirect to GitHub
+
+  /users/auth/github/callback:
+    get:
+      tags: [Users]
+      summary: GitHub OAuth callback
+      description: Handles the GitHub OAuth callback, creates a session, then redirects to the frontend.
+      responses:
+        '302':
+          description: Redirect to `${FRONTEND_URL}/callback`
+
+  /users/auth/google:
+    get:
+      tags: [Users]
+      summary: Start Google OAuth login
+      description: Redirects the browser to Google for authentication.
+      responses:
+        '302':
+          description: Redirect to Google
+
+  /users/auth/google/callback:
+    get:
+      tags: [Users]
+      summary: Google OAuth callback
+      description: Handles the Google OAuth callback, creates a session, then redirects to the frontend.
+      responses:
+        '302':
+          description: Redirect to `${FRONTEND_URL}/callback`
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get the currently authenticated user
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Current user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /password/verify-email:
+    post:
+      tags: [Password]
+      summary: Request a password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /password/reset-password:
+    post:
+      tags: [Password]
+      summary: Reset a user's password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, newPassword]
+              properties:
+                email:
+                  type: string
+                  format: email
+                newPassword:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /doctors/add:
+    post:
+      tags: [Doctors]
+      summary: Add a new doctor
+      description: Requires an authenticated session with the admin role.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name, speciality, yearsOfExperience, description]
+              properties:
+                name:
+                  type: string
+                speciality:
+                  type: string
+                yearsOfExperience:
+                  type: string
+                  description: "Sent as a string per validation rules"
+                description:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Doctor added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoctorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /doctors/all:
+    get:
+      tags: [Doctors]
+      summary: Get all doctors (paginated)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Doctors fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoctorListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /doctors/{id}:
+    get:
+      tags: [Doctors]
+      summary: Get a doctor by ID
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Doctor fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoctorResponse'
+        '404':
+          description: Doctor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /appointments/create:
+    post:
+      tags: [Appointments]
+      summary: Create a new appointment
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [doctorId, reason, date]
+              properties:
+                doctorId:
+                  type: string
+                  description: MongoDB ObjectId of the doctor
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+                date:
+                  type: string
+                  format: date-time
+                  description: ISO 8601 date
+      responses:
+        '201':
+          description: Appointment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /appointments/all:
+    get:
+      tags: [Appointments]
+      summary: Get the logged-in user's appointments
+      # NOTE: appointmentController.js content wasn't shared, so this response
+      # shape is inferred from the consistent pattern used across the other
+      # controllers (status/message/data). Adjust if the real shape differs.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Appointments fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /appointments/{id}:
+    delete:
+      tags: [Appointments]
+      summary: Delete an appointment
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Appointment deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Appointment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /departments:
+    get:
+      tags: [Departments]
+      summary: Get all departments
+      description: Requires an authenticated session with the admin role.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Departments fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /departments/add:
+    post:
+      tags: [Departments]
+      summary: Add a new department
+      description: Requires an authenticated session with the admin role.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name, description, image]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                description:
+                  type: string
+                  minLength: 10
+                  maxLength: 500
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Department added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+      description: >
+        Session cookie set by express-session after a successful login
+        (see sessionConfig). Update the cookie name here if you set a
+        custom `name` option in your session config.
+
+  schemas:
+    User:
+      type: object
+      properties:
+        _id: { type: string }
+        name: { type: string }
+        email: { type: string, format: email }
+        role: { type: string, enum: [user, admin] }
+        githubId: { type: string, nullable: true }
+        googleId: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    Doctor:
+      type: object
+      properties:
+        _id: { type: string }
+        name: { type: string }
+        speciality: { type: string }
+        image: { type: string }
+        yearsOfExperience: { type: number }
+        description: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    Department:
+      type: object
+      properties:
+        _id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        image: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    Appointment:
+      type: object
+      properties:
+        _id: { type: string }
+        userId: { type: string }
+        doctorId: { type: string }
+        reason: { type: string }
+        date: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    MessageResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+
+    ErrorResponse:
+      type: object
+      properties:
+        status: { type: string, example: failed }
+        message: { type: string }
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        status: { type: string, example: failed }
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              msg: { type: string }
+              param: { type: string }
+              location: { type: string }
+
+    UserResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+
+    AuthSuccessResponse:
+      type: object
+      description: >
+        Shape inferred from registerUser/loginUser: `data` contains the user
+        plus whatever createUserSession()/createUserResponse() returns
+        (session.js wasn't shared, so `token` is a best guess - verify against
+        your actual createUserResponse implementation).
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              description: Present if createUserResponse() includes a token field.
+
+    DoctorResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/Doctor'
+
+    DoctorListResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        page: { type: integer }
+        limit: { type: integer }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Doctor'
+
+    DepartmentResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            department:
+              $ref: '#/components/schemas/Department'
+
+    DepartmentListResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            departments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Department'
+
+    AppointmentResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/Appointment'
+
+    AppointmentListResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Appointment'

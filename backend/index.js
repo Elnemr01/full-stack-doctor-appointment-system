@@ -14,6 +14,7 @@ import departmentRouter from './routers/DepartmentRouter.js';
 import { rateLimitOpts } from './config/rateLimiting.js';
 import { rateLimit } from 'express-rate-limit'
 import passwordRouter from './routers/PasswordRouter.js';
+import swaggerDoc from './config/swagger/swagger.js';
 
 configDotenv();
 connectDB();
@@ -27,6 +28,8 @@ app.use(rateLimit(rateLimitOpts));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+swaggerDoc(app);
 
 app.use('/users', userRouter);
 app.use('/password', passwordRouter);

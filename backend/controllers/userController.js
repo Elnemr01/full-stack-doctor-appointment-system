@@ -57,7 +57,7 @@ export const registerUser = ErrorHandler(async (req, res, next) => {
 export const loginUser = ErrorHandler(async (req, res, next) => {
     passport.authenticate('local', async (err, user, info) => {
         if (!user) {
-            return res.status(401).json({
+            return res.status(403).json({
                 status: responseStatus.failed,
                 message: info?.message || 'Invalid Email or Password',
             });

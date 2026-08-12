@@ -12,7 +12,7 @@ const useRegister = () => {
         mutationKey:['register'],
         mutationFn: (data)=> registerFn(data),
         onError: (error)=>{
-            console.log(error)
+            // console.log(error)
             toast.error(error?.response?.data?.message || 'something went wrong')
         },
         onSuccess: (res)=> {

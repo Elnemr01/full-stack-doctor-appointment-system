@@ -1,5 +1,5 @@
 import React from 'react'
-import { Mail, GitBranch} from 'lucide-react';
+import { GitBranch, Mail,} from 'lucide-react';
 
 const AuthBtns = () => {
 

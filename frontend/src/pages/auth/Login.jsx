@@ -26,10 +26,6 @@ const Login = () => {
     },
   });
 
-  const handleGoToAuthApplication = (strategy)=> {
-    window.location.href=`${import.meta.env.VITE_BASE_URL}/users/auth/${strategy}`
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -62,7 +58,6 @@ const Login = () => {
                 name="email"
                 type="email"
                 autoComplete="email"
-                required
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -88,7 +83,6 @@ const Login = () => {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  required
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}

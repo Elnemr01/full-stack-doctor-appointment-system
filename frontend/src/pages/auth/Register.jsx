@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {  Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { Loader2, Eye, EyeOff, User, Mail, Lock, UserPlus } from 'lucide-react';
@@ -14,7 +14,7 @@ const Register = () => {
       name: '',
       email: '',
       password: '',
-      role: 'user',
+      isPatient: false,
     }
   },[])
 
@@ -22,10 +22,24 @@ const Register = () => {
     initialValues,
     validationSchema: registerValidationSchema,
     onSubmit: (values) => {
-      console.log(values)
-      register(values);
+      const submitValues = {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        role: values.isPatient ? 'user' : 'admin'
+      };
+      console.log(submitValues)
+      register(submitValues);
     }
   });
+
+  useEffect(() => {
+    formik.setFieldValue('isPatient', formik.values.role === 'user');
+  }, []);
+
+  useEffect(() => {
+    formik.setFieldValue('role', formik.values.isPatient ? 'user' : 'admin');
+  }, [formik.values.isPatient]);
 
   const passwordRequirements = useMemo(()=> [
     { label: 'At least 8 characters', test: (val) => val && val.length >= 8 },
@@ -130,7 +144,6 @@ const Register = () => {
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
-                required
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -156,27 +169,18 @@ const Register = () => {
           </div>
 
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
-              Register as
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                id="isPatient"
+                name="isPatient"
+                checked={formik.values.isPatient}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <span className="text-sm font-medium text-gray-700">Continue as patient</span>
             </label>
-            <select
-              id="role"
-              name="role"
-              value={formik.values.role}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${
-                formik.touched.role && formik.errors.role
-                  ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-              } focus:outline-none focus:ring-1 transition-colors bg-white`}
-            >
-              <option value="user">Patient (user)</option>
-              <option value="admin">Admin</option>
-            </select>
-            {formik.touched.role && formik.errors.role && (
-              <p className="mt-1 text-sm text-red-600">{formik.errors.role}</p>
-            )}
           </div>
 
 

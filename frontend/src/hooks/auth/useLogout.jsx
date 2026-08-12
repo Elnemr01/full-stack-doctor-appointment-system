@@ -12,11 +12,11 @@ const useLogout = () => {
         mutationKey:['logout'],
         mutationFn: ()=> logoutFn(),
         onError: (error)=>{
-            console.log(error)
+            // console.log(error)
             toast.error(error?.response?.data?.message || 'something went wrong')
         },
         onSuccess: (res)=> {
-            console.log(res)
+            // console.log(res)
             toast.success(res?.message || 'Logout successful');
             setUser(null);
             localStorage.removeItem('user');

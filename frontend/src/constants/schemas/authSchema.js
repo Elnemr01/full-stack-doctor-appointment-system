@@ -15,7 +15,7 @@ export const registerValidationSchema = Yup.object({
         .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character')
         .required('Password is required'),
     role: Yup.string()
-        .required('Please select a role'),
+        .notRequired(),
 });
 
 export const loginValidationSchema = Yup.object({
