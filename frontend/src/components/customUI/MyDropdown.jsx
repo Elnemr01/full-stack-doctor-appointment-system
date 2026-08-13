@@ -19,7 +19,7 @@ const MyDropdown = ({ links }) => {
             <DropdownMenuGroup>
                 {links.map((link, index) => (
                     <DropdownMenuItem key={index}>
-                        <NavLink to={link.path} className="w-full">
+                        <NavLink to={link.path} className="w-full text-center font-semibold">
                             {link.label}
                         </NavLink>
                     </DropdownMenuItem>

@@ -133,15 +133,6 @@ paths:
         '302':
           description: Redirect to GitHub
 
-  /users/auth/github/callback:
-    get:
-      tags: [Users]
-      summary: GitHub OAuth callback
-      description: Handles the GitHub OAuth callback, creates a session, then redirects to the frontend.
-      responses:
-        '302':
-          description: Redirect to `${FRONTEND_URL}/callback`
-
   /users/auth/google:
     get:
       tags: [Users]
@@ -150,15 +141,6 @@ paths:
       responses:
         '302':
           description: Redirect to Google
-
-  /users/auth/google/callback:
-    get:
-      tags: [Users]
-      summary: Google OAuth callback
-      description: Handles the Google OAuth callback, creates a session, then redirects to the frontend.
-      responses:
-        '302':
-          description: Redirect to `${FRONTEND_URL}/callback`
 
   /users/me:
     get:

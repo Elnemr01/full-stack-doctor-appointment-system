@@ -39,9 +39,9 @@ return (
             interval={3000}
             showArrows={true}
             showDots={true}
-            className="w-full"
+            className="w-full h-[calc(100vh-70px)] overflow-hidden flex itmes-center justify-center"
             classNames={{
-                item: "w-full h-full object-cover",
+                item: "w-full h-full bg-cover bg-center",
             }}
         />
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
