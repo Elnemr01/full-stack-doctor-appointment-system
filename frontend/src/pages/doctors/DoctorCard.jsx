@@ -24,12 +24,12 @@ const DoctorCard = ({ doctor }) => {
 
     return (
         <article className="group relative flex flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-            <div className="relative h-48 w-full overflow-hidden bg-muted">
+            <div className="relative h-48 w-full overflow-hidden bg">
                 <div className="image flex items-center justify-center">
                     <img
                         src={image}
                         alt={name}
-                        className="w-40"
+                        className="w-40 rounded-full mt-4"
                         loading="lazy"
                     />
                 </div>

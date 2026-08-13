@@ -1,3 +1,4 @@
+import { useAuth } from '@/contextAPI/UserProvider'
 import Footer from '@/myComponents/footer/Footer'
 import HomeSlider from '@/myComponents/homeSlider/HomeSlider'
 import MainLayout from '@/myComponents/mainLayout/MainLayout'
@@ -5,10 +6,13 @@ import SomeDoctors from '@/myComponents/someDoctors/SomeDoctors'
 import React from 'react'
 
 const Home = () => {
+    const {user}=useAuth();
     return (
         <MainLayout>
             <HomeSlider/>
-            <SomeDoctors/>
+            {
+                user?.role==='user' && <SomeDoctors/>
+            }
             <Footer/>
         </MainLayout>
     )

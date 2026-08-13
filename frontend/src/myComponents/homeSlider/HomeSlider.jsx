@@ -32,14 +32,14 @@ const HomeSlider = () => {
     }
 
 return (
-        <section className="relative w-full min-h-screen">
+        <section className="relative w-full">
         <Carousel
             items={slides}
             autoplay={true}
             interval={3000}
             showArrows={true}
             showDots={true}
-            className="w-full h-screen"
+            className="w-full"
             classNames={{
                 item: "w-full h-full object-cover",
             }}
