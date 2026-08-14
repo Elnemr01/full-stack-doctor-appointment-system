@@ -1,4 +1,4 @@
 export const corsConfig = {
-    origin: process.env.FRONTEND_URL,
+    origin: '*',
     credentials: true,
 };
