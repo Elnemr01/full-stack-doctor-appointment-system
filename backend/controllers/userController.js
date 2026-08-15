@@ -12,7 +12,7 @@ const createUserSession = async (req, user) => {
         id: user._id,
     });
 
-    setSessionToken(req, token);
+    req.session.token = token;
 
     return createUserResponse(user, token);
 };
