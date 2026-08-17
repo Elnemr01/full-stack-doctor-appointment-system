@@ -16,7 +16,7 @@ export const sessionConfig = {
     saveUninitialized: false,
     store: createSessionStore(),
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',

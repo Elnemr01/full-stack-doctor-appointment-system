@@ -32,6 +32,12 @@ app.use(passport.session());
 
 swaggerDoc(app);
 
+app.use("/",()=>{
+    res.status(200).json({
+        status: responseStatus.success,
+        message: 'Welcome to the API',
+    });
+});
 app.use('/users', userRouter);
 app.use('/password', passwordRouter);
 app.use('/doctors', doctorRouter);
